@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Python Comments &#8212; Lead-In of Integrated Circuit Design  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=a8e58a58"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>// This file gets injected into html pages built with Sphinx
+// which allows the webpage to talk with the preview server and coordinate details such as refreshes
+// and page scrolling.
+
+/**
+ * Find the uri and line number the editor should scroll to
+ *
+ * @returns {[string, number]} - The uri and line number
+ */
+function findEditorScrollTarget() {
+    const markers = document.querySelectorAll(".esbonio-marker")
+
+    for (let marker of markers) {
+        const bbox = marker.getBoundingClientRect()
+        // TODO: This probably needs to be made smarter as it does not account
+        // for elements that are technically on screen but hidden. - e.g. by furo's header bar.
+        if (bbox.top < 60) {
+            continue
+        }
+
+        const match = marker.className.match(/.* esbonio-marker-(\d+).*/)
+        if (!match || !match[1]) {
+            console.debug(`Unable to find marker id in '${marker.className}'`)
+            return
+        }
+
+        const markerId = match[1]
+        const location = document.querySelector(`#esbonio-marker-index span[data-id="${markerId}"]`)
+        if (!location) {
+            console.debug(`Unable to locate source for marker id: '${markerId}'`)
+            return
+        }
+
+        const uri = location.dataset.uri
+        const line = parseInt(location.dataset.line)
+        return [uri, line]
+    }
+
+    return
+}
+
+/**
+ * Scroll the webview to show the given location
+ *
+ * @param {string} uri - The uri of the document to reveal
+ * @param {number} linum - The line number within that document to reveal
+ */
+function scrollViewTo(uri, linum) {
+
+    // Select all the markers with the given uri.
+    const markers = Array.from(
+        document.querySelectorAll(`#esbonio-marker-index span[data-uri="${uri}"]`)
+    )
+
+    if (!markers) {
+        return
+    }
+
+    /** @type {HTMLElement} */
+    let current
+
+    /** @type {number} */
+    let currentLine = 0
+
+    /** @type {HTMLElement} */
+    let previous
+
+    /** @type {number} */
+    let previousLine
+
+    for (let marker of markers) {
+        let markerId = marker.dataset.id
+        let markerLine = parseInt(marker.dataset.line)
+        let element = document.querySelector(`.esbonio-marker-${markerId}`)
+
+        // Only consider markers that correspond with an element currently in the DOM
+        if (!element) {
+            continue
+        }
+
+        current = element
+        currentLine = markerLine
+
+        // Have we passed the target line number?
+        if (markerLine > linum) {
+            break
+        }
+
+        previous = current
+        previousLine = currentLine
+    }
+
+    if (!current) {
+        return
+    }
+
+    if (!previous) {
+        previous = current
+        previousLine = currentLine
+    }
+
+    // Scroll the view to a position that is an interpolation between the previous and
+    // current marker based on the requested line number.
+    const previousPos = window.scrollY + previous.getBoundingClientRect().top
+    const currentPos = window.scrollY + current.getBoundingClientRect().top
+
+    const t = (linum - previousLine) / Math.max(currentLine - previousLine, 1)
+    const y = (1 - t) * previousPos + t * currentPos
+
+    console.table({line: linum, previous: previousLine, current: currentLine, t: t, y: y})
+
+    window.scrollTo(0, y - 60)
+}
+
+const host = window.location.hostname;
+const queryString = window.location.search;
+const queryParams = new URLSearchParams(queryString);
+const ws = parseInt(queryParams.get("ws"));
+const showMarkers = queryParams.has("show-markers")
+
+const wsServer = `ws://${host}:${ws}`
+console.debug(`Connecting to '${wsServer}'...`)
+
+const socket = new WebSocket(wsServer);
+let connected = false
+
+function sendMessage(data) {
+    if (!connected) {
+        return
+    }
+    let msg = JSON.stringify(data)
+    // console.debug(msg)
+    socket.send(msg);
+}
+
+const handlers = {
+    "view/reload": function (params) {
+        console.debug("Reloading page...")
+        window.location.reload()
+    },
+    "view/scroll": (params) => {scrollViewTo(params.uri, params.line)}
+}
+
+function handle(message) {
+    // console.debug(`${JSON.stringify(message, undefined, 2)}`)
+
+    if (message.id) {
+        if (message.error) {
+            console.error(`Error: ${JSON.stringify(message.error, undefined, 2)}`)
+        } else if (message.method) {
+            let method = message.method
+            console.debug(`Request: ${method}, ${JSON.stringify(params, undefined, 2)}`)
+        } else {
+            let result = message.result
+            console.debug(`Response: ${JSON.stringify(result, undefined, 2)}`)
+        }
+    } else {
+        let handler = handlers[message.method]
+        if (handler) {
+            // console.debug(`Notification: ${message.method}, ${JSON.stringify(message.params)} `)
+            handler(message.params)
+        } else {
+            console.error(`Got unknown notification: '${message.method}'`)
+        }
+    }
+}
+
+window.addEventListener("scroll", (event) => {
+    const target = findEditorScrollTarget()
+    if (!target) {
+        return
+    }
+
+    const uri = target[0]
+    const line = target[1]
+
+    if (!uri || !line) {
+        return
+    }
+
+    // TODO: Rate limits.
+    sendMessage(
+        { jsonrpc: "2.0", method: "editor/scroll", params: { uri: uri, line: line } }
+    )
+
+})
+
+// Connection opened
+socket.addEventListener("open", (event) => {
+    console.debug("Connected.")
+    connected = true
+});
+
+// Listen for messages
+socket.addEventListener("message", (event) => {
+    handle(JSON.parse(event.data))
+});
+
+function main() {
+    if (showMarkers) {
+        let markerStyle = document.createElement('style')
+        let lines = [".linemarker { background: rgb(255, 0, 0, 0.25); position: relative; }"]
+        for (let line of scrollTargets.keys()) {
+            lines.push(`.linemarker-${line}::before {
+                          content: 'line ${line}'; position: absolute; right: 0; top: -1.2em;
+                       }`)
+        }
+
+        markerStyle.innerText = lines.join('\n')
+        document.body.append(markerStyle)
+    }
+
+    // Are we in an <iframe>?
+    if (window.parent !== window.top) {
+        window.parent.postMessage({ 'ready': true }, "*")
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", main);
+} else {
+    main();
+}
+</script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=35a8b989"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Glossary" href="../glossary.html" />
+    <link rel="prev" title="Python Syntax" href="python_syntax.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Lead-In of Integrated Circuit Design  documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/linux_introduction.html">Linux Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/python_introduction.html">Python Introduction</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Lab ? - Python</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="python_getting_started.html">Python Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_syntax.html">Python Syntax</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Python Comments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Glossary</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Python Comments</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-comment">Creating a Comment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiline-comments">Multiline Comments</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="esbonio-marker esbonio-marker-0" id="python-comments">
+<h1>Python Comments<a class="headerlink" href="#python-comments" title="Link to this heading">#</a></h1>
+<p class="esbonio-marker esbonio-marker-2">Comments can be used to explain Python code.</p>
+<p class="esbonio-marker esbonio-marker-3">Comments can be used to make the code more readable.</p>
+<p class="esbonio-marker esbonio-marker-4">Comments can be used to prevent execution when testing code.</p>
+<section class="esbonio-marker esbonio-marker-5" id="creating-a-comment">
+<h2>Creating a Comment<a class="headerlink" href="#creating-a-comment" title="Link to this heading">#</a></h2>
+<p class="esbonio-marker esbonio-marker-7">Comments starts with a <code class="docutils literal notranslate"><span class="pre">#</span></code>, and Python will ignore them:</p>
+<div class="esbonio-marker esbonio-marker-8 highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#This is a comment</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="esbonio-marker esbonio-marker-9">Comments can be placed at the end of a line, and Python will ignore the rest of the line:</p>
+<div class="esbonio-marker esbonio-marker-10 highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span> <span class="c1">#This is a comment</span>
+</pre></div>
+</div>
+<p class="esbonio-marker esbonio-marker-11">A comment does not have to be text that explains the code, it can also be used to prevent Python from executing code:</p>
+<div class="esbonio-marker esbonio-marker-12 highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#print(&quot;Hello, World!&quot;)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cheers, Mate!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section class="esbonio-marker esbonio-marker-13" id="multiline-comments">
+<h2>Multiline Comments<a class="headerlink" href="#multiline-comments" title="Link to this heading">#</a></h2>
+<p class="esbonio-marker esbonio-marker-15">Python does not really have a syntax for multiline comments.</p>
+<p class="esbonio-marker esbonio-marker-16">To add a multiline comment you could insert a <code class="docutils literal notranslate"><span class="pre">#</span></code> for each line:</p>
+<div class="esbonio-marker esbonio-marker-17 highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#This is a comment</span>
+<span class="c1">#written in</span>
+<span class="c1">#more than just one line</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="esbonio-marker esbonio-marker-18">Or, not quite as intended, you can use a multiline string.</p>
+<p class="esbonio-marker esbonio-marker-19">Since Python will ignore string literals that are not assigned to a variable, you can add a multiline string (triple quotes) in your code, and place your comment inside it:</p>
+<div class="esbonio-marker esbonio-marker-20 highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a comment</span>
+<span class="sd">written in</span>
+<span class="sd">more than just one line</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<div id="esbonio-marker-index" style="display: none">
+  <span data-id="0" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="2"></span>
+  <span data-id="2" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="4"></span>
+  <span data-id="3" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="6"></span>
+  <span data-id="4" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="8"></span>
+  <span data-id="5" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="11"></span>
+  <span data-id="7" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="13"></span>
+  <span data-id="8" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="15"></span>
+  <span data-id="9" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="20"></span>
+  <span data-id="10" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="22"></span>
+  <span data-id="11" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="26"></span>
+  <span data-id="12" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="28"></span>
+  <span data-id="13" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="34"></span>
+  <span data-id="15" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="36"></span>
+  <span data-id="16" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="38"></span>
+  <span data-id="17" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="40"></span>
+  <span data-id="18" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="47"></span>
+  <span data-id="19" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="49"></span>
+  <span data-id="20" data-uri="file:///home/icuser/ICLeadIn2024Doc/source/python/python_comments.rst" data-line="51"></span>
+</div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="python_syntax.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Python Syntax</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../glossary.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Glossary</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-comment">Creating a Comment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiline-comments">Multiline Comments</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By DESLab
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, DESLab.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
